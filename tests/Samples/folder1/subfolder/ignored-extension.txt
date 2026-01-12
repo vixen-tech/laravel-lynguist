@@ -1,0 +1,1 @@
+This {{ __('string from ignored extension') }} will not be extracted.
