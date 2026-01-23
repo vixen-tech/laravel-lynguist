@@ -4,6 +4,7 @@ namespace Vixen\Lynguist;
 
 use Illuminate\Support\ServiceProvider;
 use Vixen\Lynguist\Commands\ScanFiles;
+use Vixen\Lynguist\Commands\UploadFiles;
 
 class LynguistServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,7 @@ class LynguistServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ScanFiles::class,
+                UploadFiles::class,
             ]);
         }
     }

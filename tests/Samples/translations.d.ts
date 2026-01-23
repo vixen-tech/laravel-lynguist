@@ -1,6 +1,6 @@
 import '@vixen/lynguist'
 
-declare module '@vixen/lynguist' {
+declare module '@vixen/lynguist/dist/types' {
     interface LynguistTranslations {
         'sample-class': string
         'welcome-double-quotes': string

@@ -89,7 +89,7 @@ class Lynguist
             ->append("': string");
 
         $output = "import '@vixen/lynguist'\n
-declare module '@vixen/lynguist' {
+declare module '@vixen/lynguist/dist/types' {
     interface LynguistTranslations {
         {$terms}
     }
@@ -109,17 +109,29 @@ declare module '@vixen/lynguist' {
         return json_decode(File::get($path . "/{$locale}.json"), associative: true);
     }
 
+    /**
+     * @param array<string, list<string>> $translations
+     */
+    public function sync(array $translations): void
+    {
+        $outputPath = config('lynguist.output_path');
+
+        foreach ($translations as $lang => $list) {
+            $path = "{$outputPath}/{$lang}.json";
+
+            ksort($list);
+
+            File::put($path, json_encode($list, JSON_PRETTY_PRINT));
+        }
+    }
+
     private function extractFrom(string $text): Collection
     {
         $search = config('lynguist.search_for');
         $search = join('|', $search);
 
-        preg_match_all("/(?:{$search})\((.+?)\)/u", $text, $matches);
+        preg_match_all("/(?:{$search})\\((['\"])((?:(?!\\1|\\\\).|\\\\.)*)?\\1/u", $text, $matches);
 
-        foreach ($matches[1] as $key => $match) {
-            $matches[1][$key] = trim($match, $match[0]);
-        }
-
-        return collect($matches[1] ?? []);
+        return collect($matches[2] ?? []);
     }
 }

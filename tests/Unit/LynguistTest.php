@@ -34,6 +34,16 @@ it('merges existing and new translations', function () {
     ]);
 });
 
+it('parses complex strings', function () {
+    $path = __DIR__ . '/../Samples/other';
+    Config::set('lynguist.output_path', $path);
+
+    expect(Lynguist::scan($path))->toMatchArray([
+        "It's good, :name",
+        'Welcome to \":name\"',
+    ]);
+});
+
 it('stores translations in language files', function () {
     $terms = Lynguist::scan(config('lynguist.scannable_paths'));
 
@@ -56,7 +66,7 @@ it('generates TypeScript declaration file', function () {
     expect(File::exists(config('lynguist.types_path')))->toBeTrue()
         ->and($contents)->toContain(
             "import '@vixen/lynguist'",
-            "declare module '@vixen/lynguist'",
+            "declare module '@vixen/lynguist/dist/types'",
             'interface LynguistTranslations',
             "'sample-class': string",
             "'welcome-double-quotes': string",
@@ -70,5 +80,22 @@ it('generates TypeScript declaration file', function () {
 it('returns all translations of a given language', function () {
     Config::set('lynguist.output_path', __DIR__ . '/../Samples');
 
-    expect(Lynguist::translations())->toHaveCount(4);
+    expect(Lynguist::translations())->toHaveCount(6);
+});
+
+it('syncs all translations for all languages', function () {
+    expect(File::allFiles(config('lynguist.output_path')))->toBeEmpty();
+
+    Lynguist::sync([
+        'en' => [
+            'greeting' => 'Hello!',
+        ],
+        'fr' => [
+            'greeting' => 'Bonjour !',
+        ],
+    ]);
+
+    expect(File::allFiles(config('lynguist.output_path')))->toHaveCount(2);
+
+    File::delete(File::allFiles(config('lynguist.output_path')));
 });
