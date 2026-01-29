@@ -16,6 +16,7 @@ abstract class TestCase extends Orchestra
 
     protected function defineEnvironment($app)
     {
+        $app['config']->set('lynguist.languages', ['en', 'fr']);
         $app['config']->set('lynguist.output_path', __DIR__ . '/Samples/output');
         $app['config']->set('lynguist.types_path', __DIR__ . '/Samples/translations.d.ts');
         $app['config']->set('lynguist.scannable_paths', [

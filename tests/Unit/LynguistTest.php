@@ -44,6 +44,14 @@ it('parses complex strings', function () {
     ]);
 });
 
+it('uses custom search functions', function () {
+    Config::set('lynguist.search_for', ['__', 'trans', 'Label']);
+
+    expect(Lynguist::scan(__DIR__ . '/../Samples/customsearch'))
+        ->toContain('Default __')
+        ->toContain('custom search function');
+});
+
 it('stores translations in language files', function () {
     $terms = Lynguist::scan(config('lynguist.scannable_paths'));
 
