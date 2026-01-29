@@ -24,7 +24,7 @@ return [
     |
     */
 
-    'languages' => ['en', 'fr'],
+    'languages' => ['en'],
 
     /*
     |--------------------------------------------------------------------------
@@ -72,6 +72,7 @@ return [
     */
 
     'scannable_paths' => [
+        app_path(),
         resource_path('views'),
         resource_path('js'),
     ],
@@ -90,13 +91,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Sync URL
+    | Connect
     |--------------------------------------------------------------------------
     |
-    | URL that is called by Lynguist.com to synchronize translations.
+    | Configure connection with Lynguist.com.
     |
     */
 
-    'sync_url' => env('LYNGUIST_SYNC_URL'),
+    'connect' => [
+
+        // Generated token for a project
+        'api_token' => env('LYNGUIST_API_TOKEN'),
+
+        // URL that is called by Lynguist.com to synchronize translations
+        'sync_url' => env('LYNGUIST_SYNC_URL'),
+
+    ],
 
 ];
