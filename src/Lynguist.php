@@ -49,7 +49,7 @@ class Lynguist
             $path = "{$outputPath}/{$lang}.json";
             $contents = $this->merge($terms, $lang, $path);
 
-            File::put($path, count($contents) === 0 ? '{}' : json_encode($contents, JSON_PRETTY_PRINT));
+            File::put($path, count($contents) === 0 ? "{}\n" : json_encode($contents, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n");
         }
     }
 
@@ -121,7 +121,7 @@ declare module '@vixen/lynguist/dist/types' {
 
             ksort($list);
 
-            File::put($path, json_encode($list, JSON_PRETTY_PRINT));
+            File::put($path, json_encode($list, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n");
         }
     }
 
