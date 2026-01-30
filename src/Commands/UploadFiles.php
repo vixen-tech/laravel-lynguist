@@ -22,7 +22,10 @@ class UploadFiles extends Command
         });
 
         // @todo - DO NOT FORGET TO REPLACE WITH PROD URL!
-        $response = Http::acceptJson()->asJson()->post('https://lynguist.test/api/translations', compact('translations'));
+        $response = Http::acceptJson()
+            ->asJson()
+            ->withToken(config('lynguist.connect.api_token'))
+            ->post('https://lynguist.test/api/translations', compact('translations'));
 
         $response?->onError(function (Response $response) {
             $this->error('An error occurred while uploading translations: ' . $response->body());
