@@ -88,8 +88,8 @@ class Lynguist
             ->prepend("'")
             ->append("': string");
 
-        $output = "import '@vixen/lynguist'\n
-declare module '@vixen/lynguist/dist/types' {
+        $output = "import '@vixen-tech/lynguist'\n
+declare module '@vixen-tech/lynguist/dist/types' {
     interface LynguistTranslations {
         {$terms}
     }
@@ -130,7 +130,7 @@ declare module '@vixen/lynguist/dist/types' {
         $search = config('lynguist.search_for');
         $search = join('|', $search);
 
-        preg_match_all("/(?:{$search})\\((['\"])((?:(?!\\1|\\\\).|\\\\.)*)?\\1/u", $text, $matches);
+        preg_match_all("/(?:{$search})\\s*\\(\\s*(['\"])((?:(?!\\1|\\\\).|\\\\.)*)?\\1/us", $text, $matches);
 
         return collect($matches[2] ?? []);
     }
