@@ -31,11 +31,10 @@ class ScanFiles extends Command
                 return [$language => json_decode(File::get(config('lynguist.output_path') . "/{$language}.json"), associative: true)];
             });
 
-            // @todo - DO NOT FORGET TO REPLACE WITH PROD URL!
             $response = Http::acceptJson()
                 ->asJson()
                 ->withToken(config('lynguist.connect.api_token'))
-                ->post('https://lynguist.test/api/translations', compact('translations'));
+                ->post('https://lynguist.com/api/translations', compact('translations'));
 
             $response?->onError(function (Response $response) {
                 $this->error('An error occurred while uploading translations: ' . $response->body());
