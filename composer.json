@@ -1,7 +1,8 @@
 {
     "name": "vixen/laravel-lynguist",
     "type": "library",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
+    "license": "MIT",
     "prefer-stable": true,
     "authors": [
         {
