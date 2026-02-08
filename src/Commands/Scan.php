@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Vixen\Lynguist\Lynguist;
 
-class ScanFiles extends Command
+class Scan extends Command
 {
     protected $signature = 'lynguist:scan {--upload : Upload translations to Lynguist.com}';
 

@@ -204,12 +204,18 @@ To sync translations with [lynguist.com](https://lynguist.com):
     ```
 
     Or include the `--upload` flag when scanning:
-    
+
     ```bash
     php artisan lynguist:scan --upload
     ```
 
-3. Create your callback endpoint:
+3. Download translations from Lynguist.com:
+
+    ```bash
+    php artisan lynguist:download
+    ```
+
+4. Create your callback endpoint:
 
    ```php
    use Illuminate\Http\Request;

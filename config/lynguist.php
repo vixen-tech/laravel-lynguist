@@ -103,9 +103,6 @@ return [
         // Generated token for a project
         'api_token' => env('LYNGUIST_API_TOKEN'),
 
-        // URL that is called by Lynguist.com to synchronize translations
-        'sync_url' => env('LYNGUIST_SYNC_URL'),
-
     ],
 
 ];

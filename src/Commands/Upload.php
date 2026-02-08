@@ -7,7 +7,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 
-class UploadFiles extends Command
+class Upload extends Command
 {
     protected $signature = 'lynguist:upload';
 
