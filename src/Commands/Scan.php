@@ -3,10 +3,12 @@
 namespace Vixen\Lynguist\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Http;
+use SplFileInfo;
 use Vixen\Lynguist\Lynguist;
+
+use function Laravel\Prompts\progress;
+use function Laravel\Prompts\spin;
 
 class Scan extends Command
 {
@@ -16,31 +18,25 @@ class Scan extends Command
 
     public function handle(Lynguist $lynguist): void
     {
-        $this->line('Scanning files...');
+        $files = $lynguist->getScannableFiles(config('lynguist.scannable_paths'));
 
-        $terms = $lynguist->scan(config('lynguist.scannable_paths'));
-        $lynguist->store($terms);
-        $lynguist->generateTypeScriptFile($terms);
+        $terms = collect(
+            progress(
+                label: 'Scanning files...',
+                steps: $files,
+                callback: fn (SplFileInfo $file) => $lynguist->extractFrom(File::get($file)),
+            )
+        )->flatten()->unique()->values();
 
-        $this->info('Scan completed.');
+        spin(function () use ($lynguist, $terms) {
+            $lynguist->store($terms);
+            $lynguist->generateTypeScriptFile($terms);
+        }, 'Saving translations...');
+
+        $this->info(sprintf('Scan completed. Found %s translation keys.', $terms->count()));
 
         if ($this->option('upload')) {
-            $this->line('Uploading translations...');
-
-            $translations = collect(config('lynguist.languages'))->mapWithKeys(function (string $language) {
-                return [$language => json_decode(File::get(config('lynguist.output_path') . "/{$language}.json"), associative: true)];
-            });
-
-            $response = Http::acceptJson()
-                ->asJson()
-                ->withToken(config('lynguist.connect.api_token'))
-                ->post('https://lynguist.com/api/translations', compact('translations'));
-
-            $response?->onError(function (Response $response) {
-                $this->error('An error occurred while uploading translations: ' . $response->body());
-            });
-
-            $this->info('Upload completed.');
+            $this->call('lynguist:upload');
         }
     }
 }

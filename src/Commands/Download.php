@@ -7,6 +7,8 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Vixen\Lynguist\Lynguist;
 
+use function Laravel\Prompts\spin;
+
 class Download extends Command
 {
     protected $signature = 'lynguist:download';
@@ -15,12 +17,14 @@ class Download extends Command
 
     public function handle(Lynguist $lynguist): void
     {
-        $this->line('Downloading translations...');
-
-        $response = Http::acceptJson()
-            ->asJson()
-            ->withToken(config('lynguist.connect.api_token'))
-            ->get('https://lynguist.com/api/translations');
+        $response = spin(
+            fn () => Http::acceptJson()
+                ->asJson()
+                ->timeout(config('lynguist.connect.timeout', 120))
+                ->withToken(config('lynguist.connect.api_token'))
+                ->get('https://lynguist.com/api/translations'),
+            'Downloading translations...'
+        );
 
         $response->onError(function (Response $response) {
             $this->error('An error occurred while downloading translations: ' . $response->body());

@@ -8,27 +8,44 @@ use Illuminate\Support\Facades\File;
 class Lynguist
 {
     /**
-     * Scan directories for translation terms.
+     * Get all scannable files from the given directories.
+     *
+     * @return Collection<int, \SplFileInfo>
      */
-    public function scan(string | array $dirs): Collection
+    public function getScannableFiles(string|array $dirs): Collection
     {
         $dirs = is_array($dirs) ? $dirs : [$dirs];
-        $terms = collect();
         $allowedExtensions = config('lynguist.allowed_extensions');
 
-        foreach ($dirs as $dir) {
-            $files = File::allFiles($dir);
+        return collect($dirs)
+            ->flatMap(fn (string $dir) => File::allFiles($dir))
+            ->filter(fn (\SplFileInfo $file) => ! $allowedExtensions || in_array($file->getExtension(), $allowedExtensions))
+            ->values();
+    }
 
-            foreach ($files as $file) {
-                if ($allowedExtensions && ! in_array($file->getExtension(), $allowedExtensions)) {
-                    continue;
-                }
+    /**
+     * Scan directories for translation terms.
+     *
+     * @param  callable|null  $onProgress  Called after each file is processed with (current, total) parameters.
+     */
+    public function scan(string|array $dirs, ?callable $onProgress = null): Collection
+    {
+        $files = $this->getScannableFiles($dirs);
+        $terms = collect();
+        $total = $files->count();
+        $current = 0;
 
-                $contents = File::get($file);
+        foreach ($files as $file) {
+            $contents = File::get($file);
 
-                $terms = $terms
-                    ->merge($this->extractFrom($contents))
-                    ->unique();
+            $terms = $terms
+                ->merge($this->extractFrom($contents))
+                ->unique();
+
+            $current++;
+
+            if ($onProgress) {
+                $onProgress($current, $total);
             }
         }
 
@@ -125,7 +142,10 @@ declare module '@vixen-tech/lynguist/dist/types' {
         }
     }
 
-    private function extractFrom(string $text): Collection
+    /**
+     * Extract translation terms from file contents.
+     */
+    public function extractFrom(string $text): Collection
     {
         $search = config('lynguist.search_for');
         $search = join('|', $search);

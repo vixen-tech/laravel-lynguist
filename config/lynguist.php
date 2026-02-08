@@ -103,6 +103,9 @@ return [
         // Generated token for a project
         'api_token' => env('LYNGUIST_API_TOKEN'),
 
+        // HTTP request timeout in seconds
+        'timeout' => env('LYNGUIST_TIMEOUT', 120),
+
     ],
 
 ];

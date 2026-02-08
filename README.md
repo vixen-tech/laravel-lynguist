@@ -68,7 +68,7 @@ return [
     // Lynguist.com integration
     'connect' => [
         'api_token' => env('LYNGUIST_API_TOKEN'),
-        'sync_url' => env('LYNGUIST_SYNC_URL'),
+        'timeout' => env('LYNGUIST_TIMEOUT', 120),
     ],
 ];
 ```
@@ -194,7 +194,7 @@ To sync translations with [lynguist.com](https://lynguist.com):
 
     ```env
     LYNGUIST_API_TOKEN=your_api_token
-    LYNGUIST_SYNC_URL=https://your-sync-webhook-url
+    LYNGUIST_TIMEOUT=120
     ```
 
 2. Upload existing translations:
