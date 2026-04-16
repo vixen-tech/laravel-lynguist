@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "illuminate/contracts": "^12.43"
+        "illuminate/contracts": "^12.43|^13.5"
     },
     "require-dev": {
         "pestphp/pest": "^4.3",
