@@ -73,8 +73,8 @@ it('generates TypeScript declaration file', function () {
 
     expect(File::exists(config('lynguist.types_path')))->toBeTrue()
         ->and($contents)->toContain(
-            "import '@vixen/lynguist'",
-            "declare module '@vixen/lynguist/dist/types'",
+            "import '@vixen-tech/lynguist'",
+            "declare module '@vixen-tech/lynguist/dist/types'",
             'interface LynguistTranslations',
             "'sample-class': string",
             "'welcome-double-quotes': string",
@@ -92,6 +92,7 @@ it('returns all translations of a given language', function () {
 });
 
 it('syncs all translations for all languages', function () {
+    Config::set('lynguist.output_path', __DIR__ . '/../Samples/lang');
     expect(File::allFiles(config('lynguist.output_path')))->toBeEmpty();
 
     Lynguist::sync([

@@ -22,6 +22,8 @@ class LynguistServiceProvider extends ServiceProvider
             __DIR__.'/../config/lynguist.php' => $this->app->configPath('lynguist.php'),
         ]);
 
+        $this->loadRoutesFrom(__DIR__.'/../routes/lynguist.php');
+
         if ($this->app->runningInConsole()) {
             $this->commands([
                 Scan::class,
