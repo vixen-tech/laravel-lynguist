@@ -234,6 +234,29 @@ To sync translations with [lynguist.com](https://lynguist.com):
    }
    ```
 
+## Inertia.js Integration
+
+When [Inertia.js](https://inertiajs.com) is installed, the service provider automatically shares the current locale's translations as a `lynguist` prop on every response. This allows the frontend to use up-to-date translations from the server's lang files without requiring a frontend rebuild after a sync.
+
+To take advantage of this, call `syncFromInertia` from [`@vixen-tech/lynguist`](https://www.npmjs.com/package/@vixen-tech/lynguist) in your app entry point:
+
+```typescript
+// app.tsx / app.ts
+import { syncFromInertia } from '@vixen-tech/lynguist'
+import { createInertiaApp, router } from '@inertiajs/react'
+
+router.on('navigate', event => syncFromInertia(event.detail.page.props))
+
+createInertiaApp({
+    setup({ el, App, props }) {
+        syncFromInertia(props.initialPage.props)
+        // ...
+    }
+})
+```
+
+See the [`@vixen-tech/lynguist` documentation](https://www.npmjs.com/package/@vixen-tech/lynguist#inertiajs) for SSR setup and more details.
+
 ## Custom Translation Functions
 
 To detect custom translation functions, add them to the `search_for` config:
