@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1 [2026-07-28]
+
+### Added
+
+- The service provider now automatically shares translations as an Inertia `lynguist` prop on every response when Inertia is installed, enabling runtime translation updates without a frontend rebuild.
+
 ## 1.2.0 [2026-07-27]
 
 ### Added

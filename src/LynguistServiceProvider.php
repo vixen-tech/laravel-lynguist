@@ -3,6 +3,7 @@
 namespace Vixen\Lynguist;
 
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 use Vixen\Lynguist\Commands\Download;
 use Vixen\Lynguist\Commands\Scan;
 use Vixen\Lynguist\Commands\Upload;
@@ -23,6 +24,10 @@ class LynguistServiceProvider extends ServiceProvider
         ]);
 
         $this->loadRoutesFrom(__DIR__.'/../routes/lynguist.php');
+
+        if (class_exists(Inertia::class)) {
+            Inertia::share('lynguist', fn () => app('lynguist')->translations());
+        }
 
         if ($this->app->runningInConsole()) {
             $this->commands([
