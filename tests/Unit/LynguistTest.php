@@ -108,3 +108,52 @@ it('syncs all translations for all languages', function () {
 
     File::delete(File::allFiles(config('lynguist.output_path')));
 });
+
+it('replaces the file entirely when syncing without merge', function () {
+    Config::set('lynguist.output_path', __DIR__ . '/../Samples/lang');
+
+    Lynguist::sync([
+        'en' => [
+            'greeting' => 'Hello!',
+            'farewell' => 'Goodbye!',
+        ],
+    ]);
+
+    Lynguist::sync([
+        'en' => [
+            'greeting' => 'Hi!',
+        ],
+    ]);
+
+    expect(json_decode(File::get(config('lynguist.output_path') . '/en.json'), associative: true))
+        ->toBe(['greeting' => 'Hi!']);
+
+    File::delete(File::allFiles(config('lynguist.output_path')));
+});
+
+it('merges new translations with existing ones when merge is true', function () {
+    Config::set('lynguist.output_path', __DIR__ . '/../Samples/lang');
+
+    Lynguist::sync([
+        'en' => [
+            'greeting' => 'Hello!',
+            'farewell' => 'Goodbye!',
+        ],
+    ]);
+
+    Lynguist::sync([
+        'en' => [
+            'greeting' => 'Hi!',
+            'welcome' => 'Welcome!',
+        ],
+    ], merge: true);
+
+    expect(json_decode(File::get(config('lynguist.output_path') . '/en.json'), associative: true))
+        ->toBe([
+            'farewell' => 'Goodbye!',
+            'greeting' => 'Hi!',
+            'welcome' => 'Welcome!',
+        ]);
+
+    File::delete(File::allFiles(config('lynguist.output_path')));
+});

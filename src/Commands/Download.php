@@ -34,7 +34,15 @@ class Download extends Command
             $translations = $response->json('translations');
 
             if ($translations) {
-                $lynguist->sync($translations);
+                $lynguist->sync($translations, merge: true);
+
+                $terms = collect($translations)
+                    ->flatMap(fn (array $list) => array_keys($list))
+                    ->unique()
+                    ->values();
+
+                $lynguist->generateTypeScriptFile($terms);
+
                 $this->info('Download completed.');
             } else {
                 $this->warn('No translations found in response.');

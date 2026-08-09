@@ -127,14 +127,24 @@ declare module '@vixen-tech/lynguist/dist/types' {
     }
 
     /**
+     * Store the given translations in the language files.
+     *
      * @param array<string, list<string>> $translations
+     * @param bool $merge When true, incoming translations are merged into the existing file,
+     *                     overwriting matching keys while preserving keys not present in $translations.
+     *                     When false (default), the existing file is replaced entirely.
      */
-    public function sync(array $translations): void
+    public function sync(array $translations, bool $merge = false): void
     {
         $outputPath = config('lynguist.output_path');
 
         foreach ($translations as $lang => $list) {
             $path = "{$outputPath}/{$lang}.json";
+
+            if ($merge && File::exists($path)) {
+                $existing = json_decode(File::get($path), associative: true) ?: [];
+                $list = array_merge($existing, $list);
+            }
 
             ksort($list);
 

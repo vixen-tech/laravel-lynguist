@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.2 [2026-08-09]
+
+### Added
+
+- Added a `$merge` parameter to `Lynguist::sync()`. When `true`, incoming translations are merged into the existing language file instead of replacing it entirely, overwriting matching keys while preserving keys not present in the incoming translations.
+
+### Changed
+
+- `php artisan lynguist:download` now syncs with `merge: true`, so downloading translations no longer discards existing translations that aren't part of the response.
+- `php artisan lynguist:download` now regenerates the TypeScript declaration file after syncing, keeping it in sync with downloaded translations.
+
 ## 1.2.1 [2026-07-28]
 
 ### Added
