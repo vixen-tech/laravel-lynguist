@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.3 [2026-08-19]
+
+### Fixed
+
+- `Lynguist::sync()`, `Lynguist::store()`, and `Lynguist::generateTypeScriptFile()` now create the output directory (recursively, if needed) when it doesn't already exist, instead of failing to write.
+
 ## 1.2.2 [2026-08-09]
 
 ### Added

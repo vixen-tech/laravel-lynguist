@@ -62,6 +62,8 @@ class Lynguist
         $languages = config('lynguist.languages');
         $outputPath = config('lynguist.output_path');
 
+        File::ensureDirectoryExists($outputPath);
+
         foreach ($languages as $lang) {
             $path = "{$outputPath}/{$lang}.json";
             $contents = $this->merge($terms, $lang, $path);
@@ -96,6 +98,8 @@ class Lynguist
     public function generateTypeScriptFile(Collection $terms): void
     {
         if (! config('lynguist.types_path')) return;
+
+        File::ensureDirectoryExists(dirname(config('lynguist.types_path')));
 
         if (File::exists(config('lynguist.types_path'))) {
             File::delete(config('lynguist.types_path'));
@@ -137,6 +141,8 @@ declare module '@vixen-tech/lynguist/dist/types' {
     public function sync(array $translations, bool $merge = false): void
     {
         $outputPath = config('lynguist.output_path');
+
+        File::ensureDirectoryExists($outputPath);
 
         foreach ($translations as $lang => $list) {
             $path = "{$outputPath}/{$lang}.json";

@@ -64,6 +64,25 @@ it('stores translations in language files', function () {
     File::delete(File::allFiles(config('lynguist.output_path')));
 })->todo('Add assertions for each term.');
 
+it('creates the output directory when storing translations', function () {
+    $base = __DIR__ . '/../Samples/lang';
+    $path = "{$base}/nested";
+    Config::set('lynguist.output_path', $path);
+    File::deleteDirectory($base);
+
+    $terms = Lynguist::scan(config('lynguist.scannable_paths'));
+
+    expect(File::isDirectory($path))->toBeFalse();
+
+    Lynguist::store($terms);
+
+    expect(File::isDirectory($path))->toBeTrue()
+        ->and(File::allFiles($path))->toHaveCount(2);
+
+    File::deleteDirectory($base);
+    File::ensureDirectoryExists($base);
+});
+
 it('generates TypeScript declaration file', function () {
     $terms = Lynguist::scan(config('lynguist.scannable_paths'));
 
@@ -85,15 +104,76 @@ it('generates TypeScript declaration file', function () {
         );
 });
 
+it('creates the output directory for the TypeScript declaration file', function () {
+    $base = __DIR__ . '/../Samples/lang';
+    $path = "{$base}/nested/translations.d.ts";
+    Config::set('lynguist.types_path', $path);
+    File::deleteDirectory($base);
+
+    $terms = Lynguist::scan(config('lynguist.scannable_paths'));
+
+    expect(File::exists($path))->toBeFalse();
+
+    Lynguist::generateTypeScriptFile($terms);
+
+    expect(File::exists($path))->toBeTrue();
+
+    File::deleteDirectory($base);
+    File::ensureDirectoryExists($base);
+});
+
 it('returns all translations of a given language', function () {
     Config::set('lynguist.output_path', __DIR__ . '/../Samples');
 
     expect(Lynguist::translations())->toHaveCount(6);
 });
 
+it('creates the output directory when it does not exist', function () {
+    $path = __DIR__ . '/../Samples/lang';
+    Config::set('lynguist.output_path', $path);
+    File::deleteDirectory($path);
+
+    expect(File::isDirectory($path))->toBeFalse();
+
+    Lynguist::sync([
+        'en' => [
+            'greeting' => 'Hello!',
+        ],
+    ]);
+
+    expect(File::isDirectory($path))->toBeTrue()
+        ->and(File::exists("{$path}/en.json"))->toBeTrue();
+
+    File::deleteDirectory($path);
+    File::ensureDirectoryExists($path);
+});
+
+it('creates nested output directories recursively', function () {
+    $base = __DIR__ . '/../Samples/lang';
+    $path = "{$base}/nested/deep";
+    Config::set('lynguist.output_path', $path);
+    File::deleteDirectory($base);
+
+    expect(File::isDirectory($path))->toBeFalse();
+
+    Lynguist::sync([
+        'en' => [
+            'greeting' => 'Hello!',
+        ],
+    ]);
+
+    expect(File::isDirectory($path))->toBeTrue()
+        ->and(File::exists("{$path}/en.json"))->toBeTrue();
+
+    File::deleteDirectory($base);
+    File::ensureDirectoryExists($base);
+});
+
 it('syncs all translations for all languages', function () {
-    Config::set('lynguist.output_path', __DIR__ . '/../Samples/lang');
-    expect(File::allFiles(config('lynguist.output_path')))->toBeEmpty();
+    $path = __DIR__ . '/../Samples/lang';
+    Config::set('lynguist.output_path', $path);
+    File::ensureDirectoryExists($path);
+    File::delete(File::allFiles($path));
 
     Lynguist::sync([
         'en' => [
@@ -104,13 +184,16 @@ it('syncs all translations for all languages', function () {
         ],
     ]);
 
-    expect(File::allFiles(config('lynguist.output_path')))->toHaveCount(2);
+    expect(File::allFiles($path))->toHaveCount(2);
 
-    File::delete(File::allFiles(config('lynguist.output_path')));
+    File::delete(File::allFiles($path));
 });
 
 it('replaces the file entirely when syncing without merge', function () {
-    Config::set('lynguist.output_path', __DIR__ . '/../Samples/lang');
+    $path = __DIR__ . '/../Samples/lang';
+    Config::set('lynguist.output_path', $path);
+    File::ensureDirectoryExists($path);
+    File::delete(File::allFiles($path));
 
     Lynguist::sync([
         'en' => [
@@ -125,14 +208,17 @@ it('replaces the file entirely when syncing without merge', function () {
         ],
     ]);
 
-    expect(json_decode(File::get(config('lynguist.output_path') . '/en.json'), associative: true))
+    expect(json_decode(File::get("{$path}/en.json"), associative: true))
         ->toBe(['greeting' => 'Hi!']);
 
-    File::delete(File::allFiles(config('lynguist.output_path')));
+    File::delete(File::allFiles($path));
 });
 
 it('merges new translations with existing ones when merge is true', function () {
-    Config::set('lynguist.output_path', __DIR__ . '/../Samples/lang');
+    $path = __DIR__ . '/../Samples/lang';
+    Config::set('lynguist.output_path', $path);
+    File::ensureDirectoryExists($path);
+    File::delete(File::allFiles($path));
 
     Lynguist::sync([
         'en' => [
@@ -148,12 +234,12 @@ it('merges new translations with existing ones when merge is true', function () 
         ],
     ], merge: true);
 
-    expect(json_decode(File::get(config('lynguist.output_path') . '/en.json'), associative: true))
+    expect(json_decode(File::get("{$path}/en.json"), associative: true))
         ->toBe([
             'farewell' => 'Goodbye!',
             'greeting' => 'Hi!',
             'welcome' => 'Welcome!',
         ]);
 
-    File::delete(File::allFiles(config('lynguist.output_path')));
+    File::delete(File::allFiles($path));
 });
